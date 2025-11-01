@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Leaderboard</title>
+  <script type="module">
+    import { getLeaderboard } from "./supabaseClient.js";
+
+    async function renderLeaderboard() {
+      const leaderboardDiv = document.getElementById("leaderboard");
+      leaderboardDiv.textContent = "⏳ Loading leaderboard...";
+
+      try {
+        const players = await getLeaderboard();
+        if (!players.length) {
+          leaderboardDiv.textContent = "No players yet.";
+          return;
+        }
+
+        leaderboardDiv.innerHTML = `
+          <table border="1" cellspacing="0" cellpadding="6">
+            <tr><th>Rank</th><th>Name</th><th>Progress</th></tr>
+            ${players
+              .map(
+                (p, i) =>
+                  `<tr><td>${i + 1}</td><td>${p.name}</td><td>${p.progress}</td></tr>`
+              )
+              .join("")}
+          </table>`;
+      } catch (err) {
+        console.error(err);
+        leaderboardDiv.textContent = "❌ Error fetching leaderboard.";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", renderLeaderboard);
+  </script>
+</head>
+<body>
+  <h1>🏆 Leaderboard</h1>
+  <div id="leaderboard"></div>
+</body>
+</html>
